@@ -10,6 +10,19 @@ from datasources.coinranking import fetch_coinranking_history
 import time
 
 
+'''
+Full end to end of generating the report.
+
+    Unit testing could be added to verify that daily_report_at_hour can handle 
+unstructured data well, or that it warns/errors out properly when appropriate 
+fields aren't provided.
+
+    if column order and date format aren't as important, extra lines could be removed
+from this module. If they are critical, that functionality can instead be 
+moved down in to daily_report_at_hour.
+
+'''
+
 
 if __name__ == '__main__':
     URL = 'https://api.coinranking.com/v1/public/coin/1/history/30d'
