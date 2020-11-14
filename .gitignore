@@ -1,1 +1,2 @@
-*pycache
+*/__pycache__
+daily_report_*.json
