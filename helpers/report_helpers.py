@@ -21,6 +21,20 @@ def low_since(values: pd.Series) -> pd.Series:
     '''
     Creates a Series of booleans based on whether value x is the 
     lowest value in the series from [0:x]
+    
+    non-pandas way:
+        import math
+        cur_min = math.inf
+        output = []
+        for item in list:
+            if item <= cur_min:
+                output.append(true)
+                cur_min = item
+            elif item > cur_min:
+                output.append(false)
+            else:
+                output.append(math.nan)
+    
     '''
     return values==values.cummin()
 
