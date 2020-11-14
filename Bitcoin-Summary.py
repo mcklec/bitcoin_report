@@ -18,11 +18,13 @@ if __name__ == '__main__':
     raw_data = fetch_coinranking_history(URL)
     daily_data = daily_report_at_hour(raw_data, reporting_hour=0)
    
-    # if exact time format is wanted instead of ISO format
-    #daily_data['timestamp'] = daily_data['timestamp'].dt.strftime('%Y-%m-%dT%H:%M:%S')
+    # if exact time format is wanted instead of ISO format. Comment out for ISO format
+    daily_data['date'] = daily_data['date'].dt.strftime('%Y-%m-%dT%H:%M:%S')
     
-    # 
-
+    # if reordering columns is needed
+    column_order= ['date','price','direction','change','dayOfWeek',
+                   'highSinceStart','lowSinceStart']
+    daily_data = daily_data[column_order]
     if any(daily_data):
         daily_data.to_json(OUTPUT_FP, orient='records',date_format='iso')
     

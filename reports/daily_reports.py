@@ -9,10 +9,8 @@ This module contains various methods to generate daily reports of cryptocurrency
 '''
     
 # Constants
-TIME = 'timestamp'
+DATE = 'date'
 PRICE = 'price'
-
-
 
 def daily_report_at_hour(raw_data: list, reporting_hour: int) -> pd.DataFrame:
     '''
@@ -29,9 +27,6 @@ def daily_report_at_hour(raw_data: list, reporting_hour: int) -> pd.DataFrame:
                 “lowSinceStart": "{true/false}”                                     
             }
         ]
-        
-    
-    
     params: 
         raw_data (list): a list of dictionaries that is inteneded to be transformed
         reporting_hour (int): the hour of the day that reports should be generated for.
@@ -45,34 +40,29 @@ def daily_report_at_hour(raw_data: list, reporting_hour: int) -> pd.DataFrame:
 
     # Convert to dataframe, possibly sparse if extra columns/unparsed
     df = pd.DataFrame(raw_data)
-    
-    if TIME not in df.columns or PRICE not in df.columns:
+    df = df.rename({'timestamp': DATE},axis=1)
+    if DATE not in df.columns or PRICE not in df.columns:
         raise RuntimeError('Data does not have required columns in schema')
     
     # convert to datetime and prune unneeded data
-    df[TIME] = pd.to_datetime(df[TIME], unit='ms')
-    
+    df[DATE] = pd.to_datetime(df[DATE], unit='ms')
     
     # API occasionally returned the "most current" date that was not on the hour,
     # otherwise could do dt.hour == reporting_hour
-    df = df[ df[TIME].dt.time == datetime.time(reporting_hour, 0,0,0) ]
+    df = df[ df[DATE].dt.time == datetime.time(reporting_hour, 0,0,0) ]
     
-    # Type casting and set index to time for future time-based operations
-    # not strictly necessary but makes time based sorts/rollups easier in the future
-
+    # Type casting
     df[PRICE]=df[PRICE].astype(float)
     
+    # Could set index to DATE here for faster DATE-based operations in future
     
-    
-    # build derived columns
-
+    # build derived columns and rename columns
     df['change']=df[PRICE].diff()
     df['direction'] = change_to_direction(df['change'])
-    df['dayOfWeek'] = df[TIME].dt.day_name()
+    df['dayOfWeek'] = df[DATE].dt.day_name()
     df['highSinceStart'] = high_since(df[PRICE])
     df['lowSinceStart'] = low_since(df[PRICE])
     
-    if not df[TIME].is_unique:
-        raise Warning('Warning, duplicate values for certain dates')
-    
+    if not df[DATE].is_unique:
+        raise Warning('Warning, duplicate values for certain dates')    
     return df
