@@ -30,17 +30,27 @@ def coinranking_to_df(raw_data: list) -> pd.DataFrame:
     '''
     This method takes in a list of dictionaries that must include 'timestamp'
     and 'price' within their schema, and returns a dataframe with [price]
+    
+    params:
+        raw_data (list): a list of dictionaries containing at least "date" 
+                            and "timestamp" columns
+                            
+    returns:
+        a pandas dataframe renaming "timestamp" to "date" and leaving the rest
+        of the data untouched
     '''
      # Convert to dataframe, possibly sparse if extra columns/unparsed
     df = pd.DataFrame(raw_data)
+    if TIME not in df.columns or PRICE not in df.columns:
+        raise RuntimeError('Data does not have required columns in schema')
+        
     df = df.rename({TIME: DATE},axis=1)
     
-    if DATE not in df.columns or PRICE not in df.columns:
-        raise RuntimeError('Data does not have required columns in schema')
+
     
     # Type casting
-    df[DATE] = pd.to_datetime(df[DATE], unit='ms')    
+    df[DATE] = pd.to_datetime(df[DATE], unit='ms')   
     df[PRICE]=df[PRICE].astype(float)
-    
-    # Could set index to DATE here for faster DATE-based operations in future
+    # Could set index to DATE here for faster time-based operations in future
+
     return df

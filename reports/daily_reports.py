@@ -13,10 +13,10 @@ This module contains various methods to generate daily reports of cryptocurrency
 #DATE = 'date'
 #PRICE = 'price'
 
-def daily_report_at_hour(df: pd.DataFrame, reporting_hour: int) -> pd.DataFrame:
+def daily_report_at_hour(df: pd.DataFrame, reporting_hour: int, abs_change: bool=False) -> pd.DataFrame:
     '''
     This method takes in a dataframe that must include "date" and "price" as columns
-    and 'price' within their schema, and returns a report in the following format:
+    and returns a report in the following format:
         [
             {
                 "date": "{date}",
@@ -45,7 +45,7 @@ def daily_report_at_hour(df: pd.DataFrame, reporting_hour: int) -> pd.DataFrame:
     df = df[ df[DATE].dt.time == datetime.time(reporting_hour, 0,0,0) ]
     
     # build derived columns and rename columns
-    df['change']=df[PRICE].diff()
+    df['change']= df[PRICE].diff().abs() if abs_change else df[PRICE].diff()
     df['direction'] = change_to_direction(df['change'])
     df['dayOfWeek'] = df[DATE].dt.day_name()
     df['highSinceStart'] = high_since(df[PRICE])
