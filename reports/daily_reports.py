@@ -31,7 +31,8 @@ def daily_report_at_hour(df: pd.DataFrame, reporting_hour: int, abs_change: bool
     params: 
         raw_data (list): a list of dictionaries that is inteneded to be transformed
         reporting_hour (int): the hour of the day that reports should be generated for.
-        
+        abs_change (bool): whether the change column should be the absolute value of change,
+                            defaults to false.
     example:
         daily_report_at_hour(data, 0) will return a dataframe with information 
         about the value of a coin at 00:00:00 each day that there is data given.
